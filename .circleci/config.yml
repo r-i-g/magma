@@ -92,7 +92,7 @@ jobs:
       - run:
           name: Mock job
           command: |
-            false
+            ssh -o "StrictHostKeyChecking no" -o "UserKnownHostsFile /dev/null" -i ci_node.pem magma@10.240.0.10 'echo "hello"'
 
 workflows:
   version: 2.1
