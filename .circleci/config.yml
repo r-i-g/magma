@@ -68,6 +68,30 @@ commands:
           retry << parameters.command >>
 
 jobs:
+  integ-test:
+    machine:
+      image: ubuntu-1604:201903-01
+    steps:
+      - checkout
+      - run:
+          name: Install OpenVPN
+          command: sudo apt-get install -y openvpn
+      - run:
+          name: Configure and start VPN client
+          command: |
+            echo $OVPN_CONF | base64 -d - > ciworker.conf
+            sudo mv ciworker.conf /etc/openvpn/client/ciworker.conf
+            sudo service openvpn-client@ciworker restart
+      - run:
+          name: Decode SSH private key for worker node
+          command: |
+            echo $NODE_PKEY | base64 -d - > ci_node.pem
+            chmod 0400 ci_node.pem
+      - run:
+          name: Mock job
+          command: |
+            ssh -i ci_node.pem magma@10.240.0.10 'echo "hello"'
+
   feg-precommit:
     docker:
       - image: circleci/golang:1.13-stretch-node-browsers-legacy
@@ -436,43 +460,4 @@ workflows:
 
   magma:
     jobs:
-      - feg-precommit
-      - cwag-precommit
-      - cloud-test
-      - orc8r-gateway-test
-      - lte-test
-      - insync-checkin
-      - orc8r-core-build:
-          requires:
-            - cloud-test
-            - orc8r-gateway-test
-      - orc8r-noncore-build:
-          requires:
-            - cloud-test
-            - orc8r-gateway-test
-      - nms-build:
-          requires:
-              - cloud-test
-              - orc8r-gateway-test
-      - fossa-analyze
-
-  docusaurus_build_and_deploy:
-    jobs:
-      - docusaurus_build_and_deploy:
-          <<: *only_master
-
-  southpoll_test_and_publish:
-    jobs:
-      # - southpoll_thirdparty
-      # - southpoll_firstparty
-      - southpoll_lint
-      # - southpoll_test
-      # - southpoll_publish_dev:
-      #     requires:
-      #       - southpoll_lint
-      #       - southpoll_test
-      # - southpoll_publish_prod:
-      #     requires:
-      #       - southpoll_lint
-      #       - southpoll_test
-      #     <<: *only_master
+      - integ-test
