@@ -95,7 +95,7 @@ def _checkout_code(repo: str, branch: str = '', sha1: str = '',
             _run_git(f'git checkout -q {tag}')
         else:
             _run_git(f'git fetch --force origin '
-                     f'"master:remotes/origin/{branch}"')
+                     f'"{branch}:remotes/origin/{branch}"')
             _run_git(f'git reset --hard {sha1}')
             _run_git(f'git checkout -q -B {branch}')
 
