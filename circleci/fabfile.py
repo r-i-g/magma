@@ -86,16 +86,18 @@ def _checkout_code(repo: str, branch: str = '', sha1: str = '',
     # This logic comes from the CircleCI `checkout` step
     # TODO: allow PR builds - or does circle set branch env var to
     #  PR branch already?
+    branch = branch or 'master'
     with cd(f'{repo_name}/{magma_root}'):
+        _run_git('git clean -d -f')
         if tag:
             _run_git(f'git fetch --force origin "refs/tags/{tag}"')
             _run_git(f'git reset --hard {sha1}')
             _run_git(f'git checkout -q {tag}')
         else:
-            _run_git('git fetch --force origin "master:remotes/origin/master"')
-            if branch:
-                _run_git(f'git reset --hard {sha1}')
-                _run_git(f'git checkout -q -B {branch}')
+            _run_git(f'git fetch --force origin '
+                     f'"master:remotes/origin/{branch}"')
+            _run_git(f'git reset --hard {sha1}')
+            _run_git(f'git checkout -q -B {branch}')
 
         _run_git(f'git reset --hard {sha1}')
 

@@ -100,9 +100,11 @@ jobs:
       - run:
           name: Install python prerequisites
           command: pip3 install fabric3 jsonpickle requests PyYAML
+      # sleep 10 just in case the vpn client takes time to spin up
       - run:
           name: Run remote integ test
           command: |
+            sleep 10
             cd ${MAGMA_ROOT}/circleci
             fab integ_test:branch=${CIRCLE_BRANCH},sha1=${CIRCLE_SHA1}
 
