@@ -72,28 +72,10 @@ jobs:
     machine:
       image: ubuntu-1604:201903-01
     steps:
-      - checkout
       - run:
-          name: Install OpenVPN
+          name: Foo
           command: |
-            sudo apt-get update
-            sudo apt-get install -y openvpn
-      - run:
-          name: Configure and start VPN client
-          command: |
-            echo $OVPN_CONF | base64 -d - > ciworker.conf
-            sudo mv ciworker.conf /etc/openvpn/client.conf
-            sudo service openvpn@client restart
-      - run:
-          name: Decode SSH private key for worker node
-          command: |
-            echo $NODE_PKEY | base64 -d - > ci_node.pem
-            chmod 0400 ci_node.pem
-      - run:
-          name: Mock job
-          command: |
-            sleep 10
-            ssh -o "StrictHostKeyChecking no" -o "UserKnownHostsFile /dev/null" -i ci_node.pem magma@10.240.0.10 'echo "hello"'
+            env
 
 workflows:
   version: 2.1
