@@ -110,11 +110,7 @@ def upload_pkgs_to_aws():
     """
 
     # Get the version of magma we are releasing
-    magma_version = run('ls ~/magma-packages'
-                        ' | grep "^magma_[0-9].*"'
-                        ' | xargs -I "%" dpkg -I ~/magma-packages/%'
-                        ' | grep "Version"'
-                        ' | awk \'{print $2}\'')
+    magma_version = get_magma_version()
     copy_packages()
 
     # Upload to AWS
@@ -128,6 +124,14 @@ def upload_pkgs_to_aws():
     run('rm /tmp/packages.tar.gz')
     local('rm /tmp/packages.tar.gz')
     local('rm /tmp/packages.txt')
+
+
+def get_magma_version():
+    return run('ls ~/magma-packages'
+               ' | grep "^magma_[0-9].*"'
+               ' | xargs -I "%" dpkg -I ~/magma-packages/%'
+               ' | grep "Version"'
+               ' | awk \'{print $2}\'')
 
 
 def copy_packages():
