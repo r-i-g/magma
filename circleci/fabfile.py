@@ -42,13 +42,13 @@ def integ_test(repo: str = 'git@github.com:facebookincubator/magma.git',
         return
     _set_host_for_lease(lease, node_ssh_key)
     try:
-        _checkout_code(repo, branch, sha1, tag, pr_num, magma_root)
-        _run_remote_integ_test(repo, magma_root)
-        if build_package:
-            _run_remote_package(repo, magma_root,
-                                package_cert, package_control_proxy)
+        #_checkout_code(repo, branch, sha1, tag, pr_num, magma_root)
+        #_run_remote_integ_test(repo, magma_root)
+        #if build_package:
+            #_run_remote_package(repo, magma_root,
+                                #package_cert, package_control_proxy)
         if deploy_artifacts:
-            _deploy_packages()
+            _deploy_packages(repo, magma_root)
     finally:
         _release_node_lease(api_url, lease.node_id, lease.lease_id,
                             cert_file, cert_key_file)
