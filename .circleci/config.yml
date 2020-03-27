@@ -86,7 +86,7 @@ jobs:
             sudo mv ciworker.conf /etc/openvpn/client.conf
             sudo service openvpn@client restart
       - run:
-          name: Decode SSH/API keys
+          name: Decode and set secrets
           command: |
             cd ${MAGMA_ROOT}/circleci
             echo $NODE_PKEY | base64 -d - > ci_node.pem
@@ -94,6 +94,12 @@ jobs:
             echo $API_CERT | base64 -d - > ci_operator.pfx
             openssl pkcs12 -in ci_operator.pfx -nocerts -out ci_operator.key.pem -nodes -passin pass:
             openssl pkcs12 -in ci_operator.pfx -nokeys -out ci_operator.pem -passin pass:
+
+            echo $PROD_ROOTCA | base64 -d - > rootCA.pem
+            echo $PROD_CONTROL_PROXY | base64 -d - > control_proxy.yml
+
+            echo export AWS_ACCESS_KEY_ID="$(printenv DEPLOY_AWS_ACCESS_KEY_ID)" >> $BASH_ENV
+            echo export AWS_SECRET_ACCESS_KEY="$(printenv DEPLOY_AWS_SECRET_ACCESS_KEY)" >> $BASH_ENV
       - run:
           name: Select python 3.7.0
           command: pyenv global 3.7.0
@@ -106,7 +112,7 @@ jobs:
           command: |
             sleep 10
             cd ${MAGMA_ROOT}/circleci
-            fab integ_test:branch=${CIRCLE_BRANCH},sha1=${CIRCLE_SHA1}
+            fab integ_test:branch=${CIRCLE_BRANCH},sha1=${CIRCLE_SHA1},build_package=True,deploy_artifacts=True
 
   feg-precommit:
     docker:
@@ -474,6 +480,6 @@ jobs:
 workflows:
   version: 2.1
 
-  magma:
+  magma-lte:
     jobs:
       - integ-test

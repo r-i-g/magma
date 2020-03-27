@@ -130,6 +130,12 @@ def upload_to_aws():
     pkg.upload_pkgs_to_aws()
 
 
+def copy_packages():
+    if not env.hosts:
+        setup_env_vagrant()
+    pkg.copy_packages()
+
+
 def connect_gateway_to_cloud(control_proxy_setting_path=None,
                              cert_path=DEFAULT_CERT):
     """
@@ -407,3 +413,4 @@ def _run_integ_tests(gateway_ip='192.168.60.142'):
           ' export GATEWAY_IP=%s;'
           ' make integ_test\''
           % (key, host, port, gateway_ip))
+
