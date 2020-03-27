@@ -152,11 +152,11 @@ def _deploy_packages(repo: str, magma_root: str):
     # Grab all the build artifacts we need from the CI node
     get('/tmp/packages.tar.gz', 'packages.tar.gz')
     get('/tmp/packages.txt', 'packages.txt')
+    get('/tmp/magma_version', 'magma_version')
     get(f'{repo_name}/{magma_root}/lte/gateway/release/magma.lockfile',
         'magma.lockfile')
 
-    with cd(f'{repo_name}/{magma_root}/lte/gateway'):
-        magma_version = run('fab get_packaged_magma_version')
+    magma_version = local('cat magma_version')
     s3_path = f's3://magma-images/gateway/{magma_version}'
     local(f'aws s3 cp packages.txt {s3_path}.deplist')
     local(f'aws s3 cp magma.lockfile {s3_path}.lockfile')

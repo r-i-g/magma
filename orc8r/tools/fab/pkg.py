@@ -143,6 +143,7 @@ def copy_packages():
     #   pkg_name version deb_name
     run('rm -rf /tmp/packages')
     run('rm -rf /tmp/packages.txt')
+    run('rm -rf /tmp/magma_version')
     run('mkdir -p /tmp/packages')
     run('cp ~/magma-packages/*.deb /tmp/packages')
     packages = run('ls /tmp/packages')
@@ -165,4 +166,6 @@ def copy_packages():
     # Pull the artifacts onto the local machine
     get('/tmp/packages.tar.gz', '/tmp/packages.tar.gz')
     get('/tmp/packages.txt', '/tmp/packages.txt')
+    magma_version = get_magma_version()
+    local(f'echo "{magma_version}" >> /tmp/magma_version')
 

@@ -130,12 +130,6 @@ def upload_to_aws():
     pkg.upload_pkgs_to_aws()
 
 
-def get_packaged_magma_version():
-    if not env.hosts:
-        setup_env_vagrant()
-    pkg.get_magma_version()
-
-
 def copy_packages():
     if not env.hosts:
         setup_env_vagrant()
