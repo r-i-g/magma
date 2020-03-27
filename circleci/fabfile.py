@@ -152,11 +152,14 @@ def _run_remote_package(repo: str, magma_root: str,
         run('fab copy_packages')
 
 
-def _deploy_packages():
+def _deploy_packages(repo: str, magma_root: str):
+    repo_name = _get_repo_name(repo)
+
     # Grab all the build artifacts we need from the CI node
     get('/tmp/packages.tar.gz', 'packages.tar.gz')
     get('/tmp/packages.txt', 'packages.txt')
-    get('release/magma.lockfile', 'magma.lockfile')
+    get(f'{repo_name}/{magma_root}/lte/gateway/release/magma.lockfile',
+        'magma.lockfile')
 
     # TODO: unify this with the tools.fab.pkg
 
