@@ -42,6 +42,7 @@ def integ_test(repo: str = 'git@github.com:facebookincubator/magma.git',
         return
     _set_host_for_lease(lease, node_ssh_key)
     try:
+        _checkout_code(repo, branch, sha1, tag, pr_num, magma_root)
         _run_remote_package(repo, magma_root,
                                 package_cert, package_control_proxy)
         _deploy_packages(repo, magma_root)
