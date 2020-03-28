@@ -42,9 +42,6 @@ def integ_test(repo: str = 'git@github.com:facebookincubator/magma.git',
         return
     _set_host_for_lease(lease, node_ssh_key)
     try:
-        _checkout_code(repo, branch, sha1, tag, pr_num, magma_root)
-        _run_remote_package(repo, magma_root,
-                                package_cert, package_control_proxy)
         _deploy_packages(repo, magma_root)
     finally:
         _release_node_lease(api_url, lease.node_id, lease.lease_id,
@@ -159,7 +156,8 @@ def _deploy_packages(repo: str, magma_root: str):
     get(f'{repo_name}/{magma_root}/lte/gateway/release/magma.lockfile',
         'magma.lockfile')
 
-    magma_version = local('cat magma_version')
+    with open('magma_version') as f:
+        magma_version = f.readlines()[0].strip()
     s3_path = f's3://magma-images/gateway/{magma_version}'
     local(f'aws s3 cp packages.txt {s3_path}.deplist')
     local(f'aws s3 cp magma.lockfile {s3_path}.lockfile')
